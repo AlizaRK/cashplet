@@ -25,6 +25,9 @@ interface DashboardViewProps {
   formRef: React.RefObject<HTMLFormElement>;
 }
 
+const toDateInputValue = (date: Date = new Date()): string =>
+  date.toISOString().split('T')[0];
+
 const DashboardView: React.FC<DashboardViewProps> = ({
   user,
   dateRange,
@@ -38,6 +41,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [activeCategory, setActiveCategory] = useState('');
   const [note, setNote] = useState('');
+  const [transactionDate, setTransactionDate] = useState<string>(toDateInputValue());
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Data Hooks
@@ -53,6 +57,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     setActiveCategory(record.category);
     setSelectedAccountId(record.account_id);
     setNote(record.note || '');
+    setTransactionDate(
+      record.created_at ? toDateInputValue(new Date(record.created_at)) : toDateInputValue()
+    );
     formRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -68,7 +75,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     if (e) e.preventDefault();
 
     if (isSubmitting || !amount || !selectedAccountId) return;
-
+    console.log('Saving record:', { amount, type, activeCategory, selectedAccountId, note, transactionDate });
     const numAmount = parseFloat(amount);
     const account = accounts.find((a) => a.id === selectedAccountId);
     if (!account) return;
@@ -86,6 +93,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
     setIsSubmitting(true);
     try {
+      const now = new Date();
+      const [year, month, day] = transactionDate.split('-').map(Number);
+      const combinedDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds());
+
       const recordData: Record = {
         amount: numAmount,
         type,
@@ -93,8 +104,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         account_id: selectedAccountId,
         note,
         user_id: user!.id,
+        created_at: combinedDate.toISOString(),
       };
 
+      console.log('Creating record:', recordData);
       await createRecord(recordData);
       await editAccount(selectedAccountId, { balance: newBalance });
 
@@ -145,6 +158,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     setEditingId(null);
     setAmount('');
     setNote('');
+    setTransactionDate(toDateInputValue());
     if (accounts.length > 0) setSelectedAccountId(accounts[0].id);
   };
 
@@ -203,10 +217,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             <p className="text-3xl font-black text-amber-700">
               {analytics.totals.income > 0
                 ? Math.round(
-                    ((analytics.totals.income - analytics.totals.expense) /
-                      analytics.totals.income) *
-                      100
-                  )
+                  ((analytics.totals.income - analytics.totals.expense) /
+                    analytics.totals.income) *
+                  100
+                )
                 : 0}
               %
             </p>
@@ -283,6 +297,16 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                   className="w-full py-4 pl-8 text-5xl font-black bg-transparent border-b-4 border-gray-50 focus:border-amber-400 outline-none transition-all"
                 />
               </div>
+              <div className="flex items-center gap-2 bg-gray-50 p-4 rounded-2xl border-2 border-transparent focus-within:border-amber-400 transition-all">
+                <Calendar size={18} className="text-gray-400 shrink-0" />
+                <input
+                  type="date"
+                  value={transactionDate}
+                  max={toDateInputValue()}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTransactionDate(e.target.value)}
+                  className="w-full bg-transparent text-sm font-bold outline-none"
+                />
+              </div>
 
               {/* Custom Dropdowns Row */}
               <div className="flex flex-col sm:flex-row gap-4">
@@ -306,9 +330,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                     setActiveCategory(cat ? cat.name : val);
                   }}
                   icon={Tag}
-                  placeholder={ expenseCategories.length === 0 || incomeCategories.length === 0
-                   ? 'No Categories'
-                   :
+                  placeholder={expenseCategories.length === 0 || incomeCategories.length === 0
+                    ? 'No Categories'
+                    :
                     type === 'expense' ? expenseCategories[0]?.name : incomeCategories[0]?.name
                   }
                   disabled={
@@ -345,6 +369,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                       setEditingId(null);
                       setAmount('');
                       setNote('');
+                      setTransactionDate(toDateInputValue());
                     }}
                     className="px-6 py-5 rounded-[1.8rem] font-black bg-gray-100 text-gray-500 hover:bg-gray-200 transition-colors"
                   >

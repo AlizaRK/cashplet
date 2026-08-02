@@ -2,18 +2,22 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../../../lib/supabaseClient';
 import { Record } from '../../../../types';
 import { recordService } from './api/records.service';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 // TODO: Set proper types for user
-export const useRecords = (user: any) => {
+export const useRecords = (user: SupabaseUser) => {
   const [records, setRecords] = useState<Record[]>([]);
+  const [loading, setLoading] = useState(true);
   const recordservice = user ? recordService(user.id) : null;
 
   const fetchRecords = async () => {
     if (!user) return;
 
+    setLoading(true);
     const data = await recordservice?.getAllRecords();
 
     setRecords(data || []);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -49,5 +53,6 @@ export const useRecords = (user: any) => {
     createRecord,
     updateRecord,
     removeRecord,
+    loading,
   };
 };
