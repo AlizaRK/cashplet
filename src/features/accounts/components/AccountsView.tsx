@@ -128,7 +128,7 @@ const AccountsView: React.FC<{
                     </span>
                   </div>
                   <p className="text-sm font-bold text-gray-400 mt-1">
-                    ${acc.balance}
+                    €{acc.balance.toFixed(2)}
                   </p>
                 </div>
               </div>

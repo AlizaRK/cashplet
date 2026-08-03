@@ -47,7 +47,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
               <p className="font-black text-gray-800 truncate">{cat.name}</p>
               {cat.target > 0 && (
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5 flex items-center gap-1">
-                  <Target size={10} /> ${cat.target}/mo
+                  <Target size={10} /> €{cat.target}/mo
                 </p>
               )}
             </div>

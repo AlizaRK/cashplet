@@ -218,7 +218,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
               Income
             </p>
             <p className="text-3xl font-black text-emerald-700">
-              ${analytics.totals.income.toLocaleString()}
+              €{analytics.totals.income.toLocaleString()}
             </p>
           </div>
           <div className="bg-orange-50 p-6 rounded-3xl">
@@ -226,7 +226,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
               Expenses
             </p>
             <p className="text-3xl font-black text-orange-700">
-              ${analytics.totals.expense.toLocaleString()}
+              €{analytics.totals.expense.toLocaleString()}
             </p>
           </div>
           <div className="bg-amber-50 p-6 rounded-3xl">
@@ -257,7 +257,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 Total Net Worth
               </p>
               <h2 className="text-5xl font-black mb-10 tracking-tight">
-                $
+                €
                 {totalBalance.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                 })}
@@ -303,7 +303,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
               {/* Amount Input */}
               <div className="relative">
                 <span className="absolute left-0 bottom-4 text-3xl font-black text-gray-300">
-                  $
+                  €
                 </span>
                 <input
                   type="number"
@@ -423,7 +423,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                               : 'text-gray-400'
                           }
                         >
-                          ${spent.toFixed(0)} / ${cat.target}
+                          €{spent.toFixed(0)} / €{cat.target}
                         </span>
                       </div>
                       <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden">
@@ -481,7 +481,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                       <p
                         className={`font-black text-lg ${r.type === 'earning' ? 'text-emerald-500' : 'text-gray-700'}`}
                       >
-                        {r.type === 'earning' ? '+' : '-'}${r.amount.toFixed(2)}
+                        {r.type === 'earning' ? '+' : '-'}€{r.amount.toFixed(2)}
                       </p>
                       <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
                         <button

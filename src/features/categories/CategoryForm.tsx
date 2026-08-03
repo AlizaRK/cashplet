@@ -87,7 +87,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
           />
           <input
             type="number"
-            placeholder="Monthly Target $"
+            placeholder="Monthly Target (€)"
             value={target}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setTarget(e.target.value)
