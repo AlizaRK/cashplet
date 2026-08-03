@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Calendar,
   Target,
@@ -49,6 +49,23 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   const { records, createRecord, removeRecord } = useRecords(user);
   const { expenseCategories, incomeCategories } = useCategories(user);
 
+  useEffect(() => {
+    if (!selectedAccountId && accounts.length > 0) {
+      setSelectedAccountId(accounts[0].id);
+    }
+  }, [accounts, selectedAccountId]);
+
+  useEffect(() => {
+    const list = type === 'expense' ? expenseCategories : incomeCategories;
+    if (list.length > 0) {
+      // If there's no active category, or the current one doesn't belong to the current type's list, reset it
+      const isValid = list.some((c) => c.name === activeCategory);
+      if (!isValid) {
+        setActiveCategory(list[0].name);
+      }
+    }
+  }, [type, expenseCategories, incomeCategories]);
+
   // --- Business Logic ---
   const startEdit = (record: Record) => {
     setEditingId(record.id || '');
@@ -73,6 +90,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     if (e) e.preventDefault();
+    console.log('Saving record:', { amount, type, activeCategory, selectedAccountId, note, transactionDate });
+    console.log(isSubmitting, !amount, !selectedAccountId);
 
     if (isSubmitting || !amount || !selectedAccountId) return;
     console.log('Saving record:', { amount, type, activeCategory, selectedAccountId, note, transactionDate });
